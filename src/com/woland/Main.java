@@ -8,8 +8,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //connection to DB (PostgreSQL)
-
         System.out.println("-------- PostgreSQL "
                 + "JDBC Connection Testing ------------");
 
