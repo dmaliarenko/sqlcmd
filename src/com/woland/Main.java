@@ -1,52 +1,53 @@
 package com.woland;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.Random;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
 
-        System.out.println("-------- PostgreSQL "
-                + "JDBC Connection Testing ------------");
-
-        try {
-
-            Class.forName("org.postgresql.Driver");
-
-        } catch (ClassNotFoundException e) {
-
-            System.out.println("Where is your PostgreSQL JDBC Driver? "
-                    + "Include in your library path!");
-            e.printStackTrace();
-            return;
-
-        }
-
-        System.out.println("PostgreSQL JDBC Driver Registered!");
-
-        Connection connection = null;
-
-        try {
-
-            connection = DriverManager.getConnection(
+        Class.forName("org.postgresql.Driver");
+        Connection connection = DriverManager.getConnection(
                     "jdbc:postgresql://localhost:5432/sqlcmd", "woland",
                     "159267483");
 
-        } catch (SQLException e) {
+        //Insert
+        Statement stmt = connection.createStatement();
+        stmt.executeUpdate("INSERT INTO public.user (name, password) VALUES ('Stiven', '123456789')");
+        stmt.close();
 
-            System.out.println("Connection Failed! Check output console");
-            e.printStackTrace();
-            return;
-
+        //select
+        stmt = connection.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM public.user WHERE id > 1");
+        while (rs.next()) {
+            System.out.println("id: " + rs.getString("id"));
+            System.out.println("name: " + rs.getString("name"));
+            System.out.println("password: " + rs.getString("password"));
+            System.out.println("-----------");
         }
+        rs.close();
+        stmt.close();
 
-        if (connection != null) {
-            System.out.println("You made it, take control your database now!");
-        } else {
-            System.out.println("Failed to make connection!");
-        }
+        //delete
+        stmt = connection.createStatement();
+        stmt.executeUpdate("DELETE FROM public.user WHERE id > 6");
+        stmt.close();
+
+        //update
+        PreparedStatement ps = connection.prepareStatement(
+                "UPDATE public.user SET password = ? WHERE id > 3");
+        String pass = "password_" + new Random().nextInt();
+        ps.setString(1, "password_" + pass);
+
+        // call executeUpdate to execute our sql update statement
+        ps.executeUpdate();
+        ps.close();
+        stmt.close();
+
+
+        connection.close();
 
     }
+
 }
