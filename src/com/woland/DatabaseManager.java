@@ -24,21 +24,41 @@ public class DatabaseManager {
 
         //select
         String[] tables = manager.getTableNames ();
-
         System.out.println (Arrays.toString(tables));
 
-/*
+        String tableName = "user";
+
+        //another select
         stmt = connection.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT * FROM public.user WHERE id > 1");
+        ResultSet rsCount = stmt.executeQuery("SELECT COUNT(*) FROM public." + tableName);
+        rsCount.next();
+        int size = rsCount.getInt(1);
+        System.out.println ( size );
+
+        ResultSet rs = stmt.executeQuery("SELECT * FROM public." + tableName);
+        ResultSetMetaData rsmd = rs.getMetaData ();
+        System.out.println (rsmd.getColumnName ( 1 ));
+        System.out.println (rsmd.getColumnName ( 2 ));
+        System.out.println (rsmd.getColumnName ( 3 ));
+
+        //String name = rsmd.getColumnName ( 1 )
+
+        DataSet[] result = new DataSet[size];
+        int index = 0;
+
         while (rs.next()) {
-            System.out.println("id: " + rs.getString("id"));
-            System.out.println("name: " + rs.getString("name"));
-            System.out.println("password: " + rs.getString("password"));
-            System.out.println("-----------");
+            DataSet dataSet = new DataSet();
+            result[index++] = dataSet;
+            dataSet.put(rsmd.getColumnName ( 1 ), rs.getObject ( 1 ));
+
+            //System.out.println("id: " + rs.getString("id"));
+            //System.out.println("name: " + rs.getString("name"));
+            //System.out.println("password: " + rs.getString("password"));
+            //System.out.println("-----------");
         }
         rs.close();
         stmt.close();
-*/
+
         //delete
         stmt = connection.createStatement();
         stmt.executeUpdate("DELETE FROM public.user WHERE id > 6");
