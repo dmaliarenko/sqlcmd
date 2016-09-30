@@ -1,7 +1,5 @@
 package com.woland.sqlcmd;
 
-import com.woland.DataSet;
-import com.woland.DatabaseManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,59 +18,59 @@ public class DatabaseManagerTest {
     @Before
     public void setup() {
         manager = new DatabaseManager ();
-        manager.connect ("sqlcmd", "woland", "159267483");
+        manager.connect ("sqlcmd", "postgres", "postgres");
     }
 
     @Test
     public void testGetAllTableNames() {
         String[] tableNames = manager.getTableNames ();
-        assertEquals("[user]", Arrays.toString(tableNames));
+        assertEquals("[users]", Arrays.toString(tableNames));
     }
 
     @Test
     public void testGetTableData() {
         //given
-        manager.clear("user"); //clear our base for right test
+        manager.clear("users"); //clear our base for right test
 
         // when
         DataSet input = new DataSet();
+        input.put("id", 13);
         input.put("name", "Stiven");
         input.put("password", "123456789");
-        input.put("id", 13);
         manager.create(input); //create new record in base
 
         //then
-        DataSet[] users = manager.getTableData ( "user" );
+        DataSet[] users = manager.getTableData ( "users" );
         assertEquals ( 1, users.length );
 
         DataSet user = users[0];
-        assertEquals ( "[name, password, id]", Arrays.toString(user.getNames ()) );
-        assertEquals ( "[Stiven, 123456789, 13]", Arrays.toString(user.getValues ()) );
+        assertEquals ( "[id, name, password]", Arrays.toString(user.getNames ()) );
+        assertEquals ( "[13, Stiven, 123456789]", Arrays.toString(user.getValues ()) );
     }
 
     @Test
     public void testUpdateData() {
         //given
-        manager.clear("user"); //clear our base for right test
+        manager.clear("users"); //clear our base for right test
 
         DataSet input = new DataSet();
+        input.put("id", 13);
         input.put("name", "Stiven");
         input.put("password", "123456789");
-        input.put("id", 13);
         manager.create(input); //create new record in base
 
         //when
         DataSet newValue = new DataSet();
         newValue.put("password", "pass2");
-        manager.update("user", 13, newValue);
+        manager.update(  "users", 13, newValue);
 
         //then
-        DataSet[] users = manager.getTableData ( "user" );
+        DataSet[] users = manager.getTableData ( "users" );
         assertEquals ( 1, users.length );
 
         DataSet user = users[0];
-        assertEquals ( "[name, password, id]", Arrays.toString(user.getNames ()) );
-        assertEquals ( "[Stiven, pass2, 13]", Arrays.toString(user.getValues ()) );
+        assertEquals ( "[id, name, password]", Arrays.toString(user.getNames ()) );
+        assertEquals ( "[13, Stiven, pass2]", Arrays.toString(user.getValues ()) );
     }
 
 }
