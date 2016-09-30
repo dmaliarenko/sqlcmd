@@ -8,51 +8,6 @@ public class DatabaseManager {
 
     private Connection connection;
 
-    public static void main(String[] args) throws ClassNotFoundException, SQLException {
-        String database = "sqlcmd";
-        String user = "postgres";
-        String password = "postgres";
-
-        DatabaseManager manager = new DatabaseManager();
-        manager.connect( database, user, password );
-        Connection connection = manager.getConnection();
-
-        //delete
-        manager.clear("users");
-
-        //Insert
-        DataSet data = new DataSet ();
-        data.put("name", "Stiven");
-        data.put("password", "123456789");
-        data.put("id", 13);
-
-        manager.create (data);
-
-        //select
-        String[] tables = manager.getTableNames ();
-        System.out.println (Arrays.toString(tables));
-
-        String tableName = "user";
-
-        //another select
-        DataSet[] result = manager.getTableData (tableName );
-
-        //update
-        PreparedStatement ps = connection.prepareStatement(
-                "UPDATE public.users SET password = ? WHERE id > 3");
-        String pass = "password_" + new Random().nextInt();
-        ps.setString(1, "password_" + pass);
-
-        // call executeUpdate to execute our sql update statement
-        ps.executeUpdate();
-        ps.close();
-        //stmt.close();
-
-
-        connection.close();
-
-    }
-
     public DataSet[] getTableData(String tableName) {
         try {
             int size = getSize ( tableName );
@@ -133,9 +88,6 @@ public class DatabaseManager {
         }
     }
 
-    private Connection getConnection() {
-        return connection;
-    }
 
     public void clear(String tableName) {
 
@@ -165,6 +117,15 @@ public class DatabaseManager {
         } catch ( SQLException e ) {
             e.printStackTrace ();
         }
+    }
+
+    private String getNameFormated(DataSet newValue, String format) {
+        String string = "";
+        for (String name : newValue.getNames ()) {
+            string += String.format(format, name);
+        }
+        string = string.substring ( 0,  string.length () - 1);
+        return string;
     }
 
     private String getValuesFormated(DataSet input, String format) {
@@ -199,15 +160,6 @@ public class DatabaseManager {
             e.printStackTrace ();
 
         }
-    }
-
-    private String getNameFormated(DataSet newValue, String format) {
-        String string = "";
-        for (String name : newValue.getNames ()) {
-            string += String.format(format, name);
-        }
-        string = string.substring ( 0,  string.length () - 1);
-        return string;
     }
 
 }
